@@ -4,7 +4,8 @@ import keras
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QApplication, QMainWindow, QFileDialog, QPushButton, QLabel
-from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtGui import QPixmap
+from PIL import Image
 
 class Ui_MainWindow(QDialog):
     
@@ -72,6 +73,7 @@ class Ui_MainWindow(QDialog):
             # Display the selected photo
             pixmap = QPixmap(fileName)
             self.photoLabel.setPixmap(pixmap)
+            self.image = Image.open(fileName)
             # Show the predict button
             self.predictButton.setVisible(True)
 
@@ -81,9 +83,8 @@ class Ui_MainWindow(QDialog):
         self.browseButton.setVisible(False)
         self.predictButton.setVisible(False)
 
-        pixmap = self.photoLabel.pixmap()
-        image = pixmap.toImage()
-        input_data = self.preprocessImage(image)
+        # Use the loaded PIL image for prediction
+        input_data = self.preprocessImage(self.image)
             
         prediction = model.predict(input_data)
         predicted_class = self.decodePrediction(prediction)
@@ -92,17 +93,10 @@ class Ui_MainWindow(QDialog):
         self.resultLabel.setVisible(True)
 
     def preprocessImage(self, image):
-        image = image.scaled(256, 144)
+        image = image.resize((256, 144))
+        arr = np.array(image)
     
-        # Convert QImage to numpy array
-        width = image.width()
-        height = image.height()
-        ptr = image.bits()
-        ptr.setsize(image.byteCount())
-        arr = np.array(ptr).reshape(height, width, 4)
-        arr = arr[:, :, :3]
-    
-        # Normalize pixel values to range [0, 1]
+        # Normalize
         arr = arr / 255.0
     
         # Add batch dimension
@@ -122,4 +116,3 @@ ui = Ui_MainWindow()
 ui.setupUI(MainWindow)
 MainWindow.show()
 sys.exit(app.exec_())
-

@@ -14,7 +14,7 @@ from tensorflow.keras.layers import Dense, Conv2D, Flatten, MaxPooling2D
 from sklearn.metrics import confusion_matrix,classification_report,ConfusionMatrixDisplay
 from sklearn.preprocessing import LabelEncoder
 
-interactive_mode = False
+interactive_mode = True
 
 data_dir = pathlib.Path('./Datasets/Planets_Moons_Data/Planets and Moons') 
 image_files = list(data_dir.glob('**/*.jpg'))
