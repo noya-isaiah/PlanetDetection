@@ -82,15 +82,14 @@ class Ui_MainWindow(QDialog):
         self.predictButton.setVisible(False)
 
         pixmap = self.photoLabel.pixmap()
-        if pixmap is not None:
-            image = pixmap.toImage()
-            input_data = self.preprocessImage(image)
+        image = pixmap.toImage()
+        input_data = self.preprocessImage(image)
             
-            prediction = model.predict(input_data)
-            predicted_class = self.decodePrediction(prediction)
+        prediction = model.predict(input_data)
+        predicted_class = self.decodePrediction(prediction)
 
-            self.resultLabel.setText(f"Your planet is: {predicted_class}")
-            self.resultLabel.setVisible(True)
+        self.resultLabel.setText(f"Your planet is: {predicted_class}")
+        self.resultLabel.setVisible(True)
 
     def preprocessImage(self, image):
         image = image.scaled(256, 144)
@@ -107,7 +106,7 @@ class Ui_MainWindow(QDialog):
         arr = arr / 255.0
     
         # Add batch dimension
-        rr = np.expand_dims(arr, axis=0)
+        arr = np.expand_dims(arr, axis=0)
     
         return arr
 
