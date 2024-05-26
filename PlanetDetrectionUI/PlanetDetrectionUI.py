@@ -48,8 +48,8 @@ class Ui_MainWindow(QDialog):
         self.predictButton.setVisible(False)  # Initially hidden
         self.predictButton.clicked.connect(self.predictPhoto)
         
-        # Add a label with the text "Upload Planet"
-        self.resultLabel = QLabel("Your Planet is:", self.centralwidget)
+        # Add a label for the prediction results
+        self.resultLabel = QLabel("", self.centralwidget)
         self.resultLabel.setAlignment(Qt.AlignCenter)  # Align text to center
         self.resultLabel.setGeometry(0, 0, 611, 50)
         self.resultLabel.setObjectName("resultLabel")
@@ -93,15 +93,22 @@ class Ui_MainWindow(QDialog):
             self.resultLabel.setVisible(True)
 
     def preprocessImage(self, image):
-        image = image.scaled(256, 144, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        image = image.scaled(256, 144)
+    
+        # Convert QImage to numpy array
         width = image.width()
         height = image.height()
         ptr = image.bits()
         ptr.setsize(image.byteCount())
         arr = np.array(ptr).reshape(height, width, 4)
         arr = arr[:, :, :3]
+    
+        # Normalize pixel values to range [0, 1]
         arr = arr / 255.0
-        arr = np.expand_dims(arr, axis=0)
+    
+        # Add batch dimension
+        rr = np.expand_dims(arr, axis=0)
+    
         return arr
 
     def decodePrediction(self, prediction):
