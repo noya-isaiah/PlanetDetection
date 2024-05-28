@@ -17,11 +17,11 @@ from sklearn.preprocessing import LabelEncoder
 
 
 data_dir = pathlib.Path('./Datasets/Planets_Moons_Data/Planets and Moons') #Data path
-image_pathes = list(data_dir.glob('**/*.jpg'))#Making a list of all images pathes
+image_paths = list(data_dir.glob('**/*.jpg'))#Making a list of all images paths
 
-#show picturs examples
+#show pictures examples
 for i in range(10):
-  random_path = random.choice(image_pathes)#Choosing random image path
+  random_path = random.choice(image_paths)#Choosing random image path
   sample_img_path = str(random_path)
   sample_img = cv.imread(sample_img_path)#Load image in bgr
   sample_img = cv.cvtColor(sample_img, cv.COLOR_BGR2RGB)#Convert to rgb
@@ -31,29 +31,27 @@ for i in range(10):
   plt.show()
 
 #Create numpy arrays of images and their labels
-def data_load(image_pathes):
+def data_load(image_paths):
     X = []
     Y = []
 
-    random.shuffle(image_pathes)#shuffle pathes
+    random.shuffle(image_paths)#shuffle paths
 
-    #runing on all the images
-    for path in image_pathes:
+    #running on all the images
+    for path in image_paths:
         img = cv.imread(str(path))#load image in gbr
         img = cv.cvtColor(img, cv.COLOR_BGR2RGB)#convert into RGB
         planet_name = path.parent.name#label
         X.append(img)
         Y.append(planet_name)
 
-    #convern X and Y into numpu array
+    #convert X and Y into numpy array
     X = np.array(X)
     Y = np.array(Y)
 
     return X, Y
 
-loaded_data= data_load(image_pathes)#loading data
-
-#Devides the data into train, validation and test sets
+#Divides the data into train, validation and test sets
 def split_data(X, Y, split_percentage=[70, 20]):
     
     #calculate train, validation and test sets length
@@ -68,6 +66,7 @@ def split_data(X, Y, split_percentage=[70, 20]):
 
     return (train_X, train_Y), (valid_X, valid_Y), (test_X, test_Y)
 
+loaded_data= data_load(image_paths)#loading data
 
 (train_X, train_Y), (valid_X, valid_Y), (test_X, test_Y) = split_data(loaded_data[0], loaded_data[1])#getting train, validation and test sets
 
@@ -98,7 +97,7 @@ model = Sequential([
     Dense(11, activation='softmax')#output layer with 11 classes
 ])
 
-#Ploting the model
+#Plotting the model
 plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
 
 
@@ -119,7 +118,7 @@ val_loss = history.history['val_loss']
 val_accuracy = history.history['val_sparse_categorical_accuracy']
 
 
-#Ploting history
+#Plotting history
 plt.plot(loss, 'r');
 plt.plot(val_loss, 'g');
 plt.title('Training loss',fontsize=20);
@@ -139,7 +138,7 @@ confusion_matrix = tf.math.confusion_matrix(test_labels_encoded, predicted_label
 confusion_matrix_np = confusion_matrix.numpy()
 
 
-#ploting confusing matrix
+#plotting confusion matrix
 confusion_matrix_dispaly = ConfusionMatrixDisplay(confusion_matrix=confusion_matrix_np)
 confusion_matrix_dispaly.plot(cmap='Blues')
 plt.title('Confusion Matrix')

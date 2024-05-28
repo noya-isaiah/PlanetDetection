@@ -10,53 +10,56 @@ from PIL import Image
 class Ui_MainWindow(QDialog):
     
     def setupUI(self, MainWindow):
+        
+        #Creat window and resize it
         MainWindow.setObjectName("Noya's Planets Detection")
         MainWindow.resize(611, 505)
         
+
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         MainWindow.setCentralWidget(self.centralwidget)
         
-        # Add a label with the text "Upload Planet"
+        #Add a label with the text "Upload Planet"
         self.titleLabel = QLabel("Upload Planet", self.centralwidget)
         self.titleLabel.setAlignment(Qt.AlignCenter)
         self.titleLabel.setGeometry(0, 0, 611, 50)
         self.titleLabel.setObjectName("titleLabel")
 
-        # Customize the font of the label
+        #Customize the font of the label
         font = self.titleLabel.font()
         font.setFamily("Calibri Light")
         font.setPointSize(24)
         font.setBold(True)
         self.titleLabel.setFont(font)
 
-        # Add a QLabel for displaying the uploaded photo
+        #Add a QLabel for displaying the uploaded photo
         self.photoLabel = QLabel(self.centralwidget)
         self.photoLabel.setGeometry(150, 100, 300, 300)
         self.photoLabel.setObjectName("photoLabel")
         self.photoLabel.setScaledContents(True)  # Ensure the image scales to fit the label
         
-        # Add a button for browsing files
+        #Add a button for browsing files
         self.browseButton = QPushButton("Browse File", self.centralwidget)
         self.browseButton.setGeometry(250, 420, 100, 30)
         self.browseButton.setObjectName("browseButton")
         self.browseButton.clicked.connect(self.browseFile)
 
-        # Add a button for prediction
+        #Add a button for prediction
         self.predictButton = QPushButton("Predict", self.centralwidget)
         self.predictButton.setGeometry(250, 460, 100, 30)
         self.predictButton.setObjectName("predictButton")
         self.predictButton.setVisible(False)  # Initially hidden
         self.predictButton.clicked.connect(self.predictPhoto)
         
-        # Add a label for the prediction results
+        #Add a label for the prediction results
         self.resultLabel = QLabel("", self.centralwidget)
         self.resultLabel.setAlignment(Qt.AlignCenter)  # Align text to center
         self.resultLabel.setGeometry(0, 0, 611, 50)
         self.resultLabel.setObjectName("resultLabel")
         self.resultLabel.setVisible(False)
 
-        # Customize the font of the label
+        #Customize the font of the label
         font = self.resultLabel.font()
         font.setFamily("Calibri Light")
         font.setPointSize(24)
@@ -64,15 +67,15 @@ class Ui_MainWindow(QDialog):
         self.resultLabel.setFont(font)
 
     def browseFile(self):
-        # Open a file dialog and get the selected file path
+        #Open a file dialog and get the selected file path
         fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "", 
                                                   "Image Files (*.png *.jpg *.jpeg *.bmp *.gif)")
-        # Display the selected photo
+        #Display the selected photo
         pixmap = QPixmap(fileName)
         self.photoLabel.setPixmap(pixmap)
         self.image = Image.open(fileName)
         print(self.image.size)
-        # Show the predict button
+        #Show the predict button
         self.predictButton.setVisible(True)
 
     def predictPhoto(self):
@@ -93,10 +96,10 @@ class Ui_MainWindow(QDialog):
         image = image.resize((256, 144))
         arr = np.array(image)
     
-        # Normalize
+        #Normalize
         arr = arr / 255.0
     
-        # Add batch dimension
+        #Add batch dimension
         arr = np.expand_dims(arr, axis=0)
     
         return arr
