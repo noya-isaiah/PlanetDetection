@@ -65,17 +65,15 @@ class Ui_MainWindow(QDialog):
 
     def browseFile(self):
         # Open a file dialog and get the selected file path
-        options = QFileDialog.Options()
-        options |= QFileDialog.ReadOnly
         fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "", 
-                                                  "Image Files (*.png *.jpg *.jpeg *.bmp *.gif)", options=options)
-        if fileName:
-            # Display the selected photo
-            pixmap = QPixmap(fileName)
-            self.photoLabel.setPixmap(pixmap)
-            self.image = Image.open(fileName)
-            # Show the predict button
-            self.predictButton.setVisible(True)
+                                                  "Image Files (*.png *.jpg *.jpeg *.bmp *.gif)")
+        # Display the selected photo
+        pixmap = QPixmap(fileName)
+        self.photoLabel.setPixmap(pixmap)
+        self.image = Image.open(fileName)
+        print(self.image.size)
+        # Show the predict button
+        self.predictButton.setVisible(True)
 
     def predictPhoto(self):
         self.titleLabel.setVisible(False)
@@ -83,7 +81,6 @@ class Ui_MainWindow(QDialog):
         self.browseButton.setVisible(False)
         self.predictButton.setVisible(False)
 
-        # Use the loaded PIL image for prediction
         input_data = self.preprocessImage(self.image)
             
         prediction = model.predict(input_data)
