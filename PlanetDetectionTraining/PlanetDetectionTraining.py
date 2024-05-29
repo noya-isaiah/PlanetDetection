@@ -131,7 +131,6 @@ plt.xlabel("epoch")
 
 y_pred = model.predict(test_images)#Test predictions
 predicted_labels = tf.argmax(y_pred, axis=1)#Taking the most probable class
-predicted_labels = y_pred.numpy()
 
 #create confusion matrix
 confusion_matrix = tf.math.confusion_matrix(test_labels_encoded, predicted_labels)

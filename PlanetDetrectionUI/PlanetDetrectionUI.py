@@ -8,12 +8,13 @@ from PyQt5.QtWidgets import QDialog, QApplication, QMainWindow, QFileDialog, QPu
 from PyQt5.QtGui import QPixmap
 from PIL import Image
 
-class Planet_Detection_UI():
+#Planet_Detection_UI subclass of QDialog
+class Planet_Detection_UI(QDialog):
     
-    #Creats the main window, buttons and the larrbels
+    #Creates the main window, buttons and the labels
     def setupUI(self, MainWindow):
         
-        #Creat window and resize it
+        #Creats window and resize it
         MainWindow.setObjectName("Noya's Planets Detection")
         MainWindow.resize(611, 505)
         
@@ -66,13 +67,13 @@ class Planet_Detection_UI():
         pixmap = QPixmap(fileName)
         self.photoLabel.setPixmap(pixmap)
         
-        #Openning image
+        #Opening image
         self.image = Image.open(fileName)
 
         #Show the predict button
         self.predictButton.setVisible(True)
 
-    #Prapering photo for prediction
+    #Praparing photo for prediction
     def preprocessImage(self, image): 
         image = image.resize((256, 144))#Resizing photo
         arr = np.array(image)#Convert into numpy array
@@ -100,10 +101,10 @@ class Planet_Detection_UI():
         self.browseButton.setVisible(False)
         self.predictButton.setVisible(False)
 
-        #Preapering photo for prediction
+        #Preaparing photo for prediction
         input_data = self.preprocessImage(self.image)
         
-        #Presiction
+        #Prediction
         prediction = model.predict(input_data)
         
         #Mapping the prediction result for planet name
