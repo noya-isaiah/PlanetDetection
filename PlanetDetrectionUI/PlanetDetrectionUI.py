@@ -1,3 +1,4 @@
+#imports
 import numpy as np
 import sys
 import keras
@@ -7,8 +8,9 @@ from PyQt5.QtWidgets import QDialog, QApplication, QMainWindow, QFileDialog, QPu
 from PyQt5.QtGui import QPixmap
 from PIL import Image
 
-class Ui_MainWindow(QDialog):
+class Planet_Detection_UI():
     
+    #Creats the main window, buttons and the larrbels
     def setupUI(self, MainWindow):
         
         #Creat window and resize it
@@ -16,49 +18,37 @@ class Ui_MainWindow(QDialog):
         MainWindow.resize(611, 505)
         
 
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName("centralwidget")
-        MainWindow.setCentralWidget(self.centralwidget)
-        
         #Add a label with the text "Upload Planet"
-        self.titleLabel = QLabel("Upload Planet", self.centralwidget)
-        self.titleLabel.setAlignment(Qt.AlignCenter)
-        self.titleLabel.setGeometry(0, 0, 611, 50)
-        self.titleLabel.setObjectName("titleLabel")
-
+        self.titleLabel = QLabel("Upload Planet", MainWindow)
+        self.titleLabel.setGeometry(200,0, 500, 50)
         #Customize the font of the label
         font = self.titleLabel.font()
         font.setFamily("Calibri Light")
         font.setPointSize(24)
         font.setBold(True)
         self.titleLabel.setFont(font)
+        
 
         #Add a QLabel for displaying the uploaded photo
-        self.photoLabel = QLabel(self.centralwidget)
+        self.photoLabel = QLabel(MainWindow)
         self.photoLabel.setGeometry(150, 100, 300, 300)
-        self.photoLabel.setObjectName("photoLabel")
-        self.photoLabel.setScaledContents(True)  # Ensure the image scales to fit the label
+        self.photoLabel.setScaledContents(True)#Fitting the image to the size of the label
         
         #Add a button for browsing files
-        self.browseButton = QPushButton("Browse File", self.centralwidget)
+        self.browseButton = QPushButton("BrowseFile", MainWindow)
         self.browseButton.setGeometry(250, 420, 100, 30)
-        self.browseButton.setObjectName("browseButton")
         self.browseButton.clicked.connect(self.browseFile)
 
         #Add a button for prediction
-        self.predictButton = QPushButton("Predict", self.centralwidget)
+        self.predictButton = QPushButton("Predict", MainWindow)
         self.predictButton.setGeometry(250, 460, 100, 30)
-        self.predictButton.setObjectName("predictButton")
-        self.predictButton.setVisible(False)  # Initially hidden
+        self.predictButton.setVisible(False)#Initially hidden
         self.predictButton.clicked.connect(self.predictPhoto)
         
         #Add a label for the prediction results
-        self.resultLabel = QLabel("", self.centralwidget)
-        self.resultLabel.setAlignment(Qt.AlignCenter)  # Align text to center
-        self.resultLabel.setGeometry(0, 0, 611, 50)
-        self.resultLabel.setObjectName("resultLabel")
+        self.resultLabel = QLabel("", MainWindow)
+        self.resultLabel.setGeometry(170,0, 500, 50)
         self.resultLabel.setVisible(False)
-
         #Customize the font of the label
         font = self.resultLabel.font()
         font.setFamily("Calibri Light")
@@ -66,53 +56,68 @@ class Ui_MainWindow(QDialog):
         font.setBold(True)
         self.resultLabel.setFont(font)
 
+
+    #Selecting photo from browse file and makes the predict button visible 
     def browseFile(self):
         #Open a file dialog and get the selected file path
-        fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "", 
-                                                  "Image Files (*.png *.jpg *.jpeg *.bmp *.gif)")
+        fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()","", 
+                                                  "Image Files (*.jpg)")
         #Display the selected photo
         pixmap = QPixmap(fileName)
         self.photoLabel.setPixmap(pixmap)
+        
+        #Openning image
         self.image = Image.open(fileName)
-        print(self.image.size)
+
         #Show the predict button
         self.predictButton.setVisible(True)
 
+    #Prapering photo for prediction
+    def preprocessImage(self, image): 
+        image = image.resize((256, 144))#Resizing photo
+        arr = np.array(image)#Convert into numpy array
+    
+        #Normalization
+        arr = arr / 255.0
+    
+        #Adding dimension
+        arr = np.expand_dims(arr, axis=0)
+    
+        return arr
+
+    #Converting predictions result from numbers to verabel class
+    def ResultsMapping(self, prediction):
+        class_index = np.argmax(prediction, axis=1)[0]#Taking the most probable class
+        class_names = ['Earth', 'Jupiter', 'MakeMake', 'Mars', 'Mercury', 
+                       'Moon', 'Neptune', 'Pluto', 'Saturn', 'Uranus', 'Venus']
+        return str(class_names[class_index])
+    
+
     def predictPhoto(self):
+        #Cleaning the window
         self.titleLabel.setVisible(False)
         self.photoLabel.setVisible(False)
         self.browseButton.setVisible(False)
         self.predictButton.setVisible(False)
 
+        #Preapering photo for prediction
         input_data = self.preprocessImage(self.image)
-            
+        
+        #Presiction
         prediction = model.predict(input_data)
-        predicted_class = self.decodePrediction(prediction)
+        
+        #Mapping the prediction result for planet name
+        predicted_class = self.ResultsMapping(prediction)
 
-        self.resultLabel.setText(f"Your planet is: {predicted_class}")
+        #Showing prediction in the window
+        self.resultLabel.setText("Your planet is: "+ predicted_class)
         self.resultLabel.setVisible(True)
 
-    def preprocessImage(self, image):
-        image = image.resize((256, 144))
-        arr = np.array(image)
-    
-        #Normalize
-        arr = arr / 255.0
-    
-        #Add batch dimension
-        arr = np.expand_dims(arr, axis=0)
-    
-        return arr
-
-    def decodePrediction(self, prediction):
-        class_index = np.argmax(prediction, axis=1)[0]
-        class_names = ['Earth', 'Jupiter', 'MakeMake', 'Mars', 'Mercury', 'Moon', 'Neptune', 'Pluto', 'Saturn', 'Uranus', 'Venus']
-        return class_names[class_index]
-
-model = keras.models.load_model('../models/planet_detecion_model.keras')
-app = QApplication(sys.argv)
-MainWindow = QMainWindow()
-ui = Ui_MainWindow()
-ui.setupUI(MainWindow)
-MainWindow.show()
-sys.exit(app.exec_())
+#Main
+model = keras.models.load_model('../models/planet_detecion_model.keras')#Loading model
+app = QApplication(sys.argv)#Creates QApplication which is controlling the application's event loop 
+MainWindow = QMainWindow()#Creates interface window
+ui = Planet_Detection_UI()#Creates planet detection ui
+ui.setupUI(MainWindow)#Realization main window
+MainWindow.show()#Showing window on screen
+sys.exit(app.exec_())#Starts the event loop and when the main window is closed it returns the exit status
