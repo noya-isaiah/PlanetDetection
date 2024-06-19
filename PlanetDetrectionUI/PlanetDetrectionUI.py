@@ -21,7 +21,7 @@ class Planet_Detection_UI(QDialog):
 
         #Add a label with the text "Upload Planet"
         self.titleLabel = QLabel("Upload Planet", MainWindow)
-        self.titleLabel.setGeometry(200,0, 500, 50)
+        self.titleLabel.setGeometry(155,0, 500, 50)
         #Customize the font of the label
         font = self.titleLabel.font()
         font.setFamily("Calibri Light")
@@ -48,7 +48,7 @@ class Planet_Detection_UI(QDialog):
         
         #Add a label for the prediction results
         self.resultLabel = QLabel("", MainWindow)
-        self.resultLabel.setGeometry(170,0, 500, 50)
+        self.resultLabel.setGeometry(100,0, 500, 50)
         self.resultLabel.setVisible(False)
         #Customize the font of the label
         font = self.resultLabel.font()

@@ -121,10 +121,9 @@ val_accuracy = history.history['val_sparse_categorical_accuracy']
 #Plotting history
 plt.plot(loss, 'r');
 plt.plot(val_loss, 'g');
-plt.title('Training loss',fontsize=20);
+plt.title('Training History',fontsize=20);
 plt.plot(accuracy, 'b');
 plt.plot(val_accuracy, 'y');
-plt.title('Training accuracy',fontsize=20);
 plt.legend(['loss', 'validation loss', 'accuracy', 'validation accuracy'])
 plt.xlabel("epoch")
 
@@ -148,4 +147,3 @@ print(classification_report(test_labels_encoded, predicted_labels))
 
 #saving model
 model.save('../models/planet_detecion_model.keras', save_format='tf')
-
